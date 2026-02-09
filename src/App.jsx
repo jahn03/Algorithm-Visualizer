@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Navbar from "./components/Navbar";
 import AlgorithmSelector from "./components/AlgorithmSelector";
 import InfoPanel from "./components/InfoPanel";
+import Legend from "./components/Legend";
 import Visualizer from "./components/Visualizer";
 import Controls from "./components/Controls";
 
@@ -13,9 +14,19 @@ function App() {
   const [array, setArray] = useState([]);
   const [speed, setSpeed] = useState(200);
   const [algorithm, setAlgorithm] = useState("bubble");
+
   const [activeIndices, setActiveIndices] = useState([]);
   const [sortedIndices, setSortedIndices] = useState([]);
+
   const [isSorting, setIsSorting] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // 🔑 Ref used by animation runner for pause/resume
+  const isPausedRef = useRef(false);
+
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
 
   const algorithmMap = {
     bubble: bubbleSortSteps,
@@ -24,18 +35,25 @@ function App() {
 
   const generateRandomArray = (size = 30) => {
     if (isSorting) return;
+
     const arr = Array.from(
       { length: size },
       () => Math.floor(Math.random() * 100) + 5
     );
+
     setArray(arr);
-    setSortedIndices([]);
     setActiveIndices([]);
+    setSortedIndices([]);
+    setIsPaused(false);
   };
 
   const startSorting = async () => {
     if (isSorting) return;
+
     setIsSorting(true);
+    setIsPaused(false);
+    setActiveIndices([]);
+    setSortedIndices([]);
 
     const steps = algorithmMap[algorithm](array);
 
@@ -44,13 +62,17 @@ function App() {
       setArray,
       setActiveIndices,
       setSortedIndices,
-      speed
+      speed,
+      isPausedRef
     );
 
+    // ✅ Clean finish state
     setActiveIndices([]);
+    setIsPaused(false);
     setIsSorting(false);
   };
 
+  // ✅ Generate array on first load
   useEffect(() => {
     generateRandomArray();
   }, []);
@@ -66,6 +88,7 @@ function App() {
             setSelected={setAlgorithm}
           />
           <InfoPanel algorithm={algorithm} />
+          <Legend />
         </div>
 
         <Visualizer
@@ -80,6 +103,8 @@ function App() {
           speed={speed}
           setSpeed={setSpeed}
           isSorting={isSorting}
+          isPaused={isPaused}
+          setIsPaused={setIsPaused}
         />
       </div>
     </div>

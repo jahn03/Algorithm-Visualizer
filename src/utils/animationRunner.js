@@ -1,9 +1,17 @@
+async function wait(speed, isPausedRef) {
+  while (isPausedRef.current) {
+    await new Promise((r) => setTimeout(r, 50));
+  }
+  await new Promise((r) => setTimeout(r, speed));
+}
+
 export async function runAnimations(
   steps,
   setArray,
   setActiveIndices,
   setSortedIndices,
-  speed
+  speed,
+  isPausedRef
 ) {
   for (let step of steps) {
     if (step.type === "compare") {
@@ -34,6 +42,6 @@ export async function runAnimations(
       setActiveIndices([]);
     }
 
-    await new Promise((res) => setTimeout(res, speed));
+    await wait(speed, isPausedRef);
   }
 }
