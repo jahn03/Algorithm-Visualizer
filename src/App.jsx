@@ -1,111 +1,88 @@
-import { useState, useEffect, useRef } from "react";
-import Navbar from "./components/Navbar";
-import AlgorithmSelector from "./components/AlgorithmSelector";
-import InfoPanel from "./components/InfoPanel";
-import Legend from "./components/Legend";
-import Visualizer from "./components/Visualizer";
-import Controls from "./components/Controls";
-
-import { bubbleSortSteps } from "./algorithms/bubbleSort";
-import { mergeSortSteps } from "./algorithms/mergeSort";
-import { runAnimations } from "./utils/animationRunner";
+import { useEffect, useState } from "react";
 
 function App() {
   const [array, setArray] = useState([]);
-  const [speed, setSpeed] = useState(200);
-  const [algorithm, setAlgorithm] = useState("bubble");
-
-  const [activeIndices, setActiveIndices] = useState([]);
-  const [sortedIndices, setSortedIndices] = useState([]);
-
+  const [arraySize, setArraySize] = useState(30);
   const [isSorting, setIsSorting] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-
-  // 🔑 Ref used by animation runner for pause/resume
-  const isPausedRef = useRef(false);
 
   useEffect(() => {
-    isPausedRef.current = isPaused;
-  }, [isPaused]);
+    generateArray();
+  }, [arraySize]);
 
-  const algorithmMap = {
-    bubble: bubbleSortSteps,
-    merge: mergeSortSteps,
+  const generateArray = () => {
+    const newArray = [];
+    for (let i = 0; i < arraySize; i++) {
+      newArray.push(Math.floor(Math.random() * 300) + 20);
+    }
+    setArray(newArray);
   };
 
-  const generateRandomArray = (size = 30) => {
-    if (isSorting) return;
-
-    const arr = Array.from(
-      { length: size },
-      () => Math.floor(Math.random() * 100) + 5
-    );
-
-    setArray(arr);
-    setActiveIndices([]);
-    setSortedIndices([]);
-    setIsPaused(false);
-  };
-
-  const startSorting = async () => {
-    if (isSorting) return;
-
+  const bubbleSort = async () => {
     setIsSorting(true);
-    setIsPaused(false);
-    setActiveIndices([]);
-    setSortedIndices([]);
+    const arr = [...array];
 
-    const steps = algorithmMap[algorithm](array);
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr.length - i - 1; j++) {
+        if (arr[j] > arr[j + 1]) {
+          [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+          setArray([...arr]);
+          await new Promise((res) => setTimeout(res, 50));
+        }
+      }
+    }
 
-    await runAnimations(
-      steps,
-      setArray,
-      setActiveIndices,
-      setSortedIndices,
-      speed,
-      isPausedRef
-    );
-
-    // ✅ Clean finish state
-    setActiveIndices([]);
-    setIsPaused(false);
     setIsSorting(false);
   };
 
-  // ✅ Generate array on first load
-  useEffect(() => {
-    generateRandomArray();
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <Navbar />
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-6">
+      <h1 className="text-3xl font-bold mb-6">Algorithm Visualizer</h1>
 
-      <div className="p-4 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <AlgorithmSelector
-            selected={algorithm}
-            setSelected={setAlgorithm}
+      {/* Controls */}
+      <div className="flex flex-col items-center gap-4 mb-6 w-full max-w-md">
+        <label className="w-full">
+          <span className="text-sm text-gray-300">
+            Array Size: {arraySize}
+          </span>
+          <input
+            type="range"
+            min="10"
+            max="100"
+            value={arraySize}
+            disabled={isSorting}
+            onChange={(e) => setArraySize(Number(e.target.value))}
+            className="w-full"
           />
-          <InfoPanel algorithm={algorithm} />
-          <Legend />
+        </label>
+
+        <div className="flex gap-4">
+          <button
+            onClick={generateArray}
+            disabled={isSorting}
+            className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50"
+          >
+            New Array
+          </button>
+
+          <button
+            onClick={bubbleSort}
+            disabled={isSorting}
+            className="px-4 py-2 bg-green-600 rounded hover:bg-green-700 disabled:opacity-50"
+          >
+            Bubble Sort
+          </button>
         </div>
+      </div>
 
-        <Visualizer
-          array={array}
-          activeIndices={activeIndices}
-          sortedIndices={sortedIndices}
-        />
-
-        <Controls
-          generateArray={generateRandomArray}
-          startSorting={startSorting}
-          speed={speed}
-          setSpeed={setSpeed}
-          isSorting={isSorting}
-          isPaused={isPaused}
-          setIsPaused={setIsPaused}
-        />
+      {/* Bars */}
+      <div className="flex items-end gap-1 h-80 w-full max-w-5xl">
+        {array.map((value, idx) => (
+          <div
+            key={idx}
+            style={{ height: `${value}px` }}
+            className="bg-teal-400 flex-1 rounded-sm"
+          />
+        ))}
       </div>
     </div>
   );
