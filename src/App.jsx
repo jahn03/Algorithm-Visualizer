@@ -1,45 +1,84 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { bubbleSortSteps } from "./algorithms/bubbleSort";
+import { mergeSortSteps } from "./algorithms/mergeSort";
+import { selectionSortSteps } from "./algorithms/selectionSort";
+import { runAnimations } from "./utils/animationRunner";
 
 function App() {
   const [array, setArray] = useState([]);
   const [arraySize, setArraySize] = useState(30);
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState("bubble");
+  const [activeIndices, setActiveIndices] = useState([]);
+  const [sortedIndices, setSortedIndices] = useState([]);
   const [isSorting, setIsSorting] = useState(false);
+
+  const speed = 50;
+  const isPausedRef = useRef(false);
 
   useEffect(() => {
     generateArray();
   }, [arraySize]);
 
   const generateArray = () => {
-    const newArray = [];
-    for (let i = 0; i < arraySize; i++) {
-      newArray.push(Math.floor(Math.random() * 300) + 20);
-    }
+    const newArray = Array.from(
+      { length: arraySize },
+      () => Math.floor(Math.random() * 300) + 20
+    );
     setArray(newArray);
+    setSortedIndices([]);
+    setActiveIndices([]);
   };
 
-  const bubbleSort = async () => {
-    setIsSorting(true);
-    const arr = [...array];
-
-    for (let i = 0; i < arr.length; i++) {
-      for (let j = 0; j < arr.length - i - 1; j++) {
-        if (arr[j] > arr[j + 1]) {
-          [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-          setArray([...arr]);
-          await new Promise((res) => setTimeout(res, 50));
-        }
-      }
+  const getSteps = () => {
+    if (selectedAlgorithm === "bubble") {
+      return bubbleSortSteps(array);
     }
+    if (selectedAlgorithm === "merge") {
+      return mergeSortSteps(array);
+    }
+    if (selectedAlgorithm === "selection") {
+      return selectionSortSteps(array);
+    }
+    return [];
+  };
+
+  const handleSort = async () => {
+    setIsSorting(true);
+    setSortedIndices([]);
+    const steps = getSteps();
+
+    await runAnimations(
+      steps,
+      setArray,
+      setActiveIndices,
+      setSortedIndices,
+      speed,
+      isPausedRef
+    );
 
     setIsSorting(false);
+    setActiveIndices([]);
   };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-6">
       <h1 className="text-3xl font-bold mb-6">Algorithm Visualizer</h1>
 
-      {/* Controls */}
       <div className="flex flex-col items-center gap-4 mb-6 w-full max-w-md">
+
+        {/* Algorithm Selector */}
+        <select
+          value={selectedAlgorithm}
+          onChange={(e) => setSelectedAlgorithm(e.target.value)}
+          disabled={isSorting}
+          className="bg-gray-700 p-2 rounded w-full"
+        >
+          <option value="bubble">Bubble Sort</option>
+          <option value="merge">Merge Sort</option>
+          <option value="selection">Selection Sort</option>
+        </select>
+
+        {/* Array Size Slider */}
         <label className="w-full">
           <span className="text-sm text-gray-300">
             Array Size: {arraySize}
@@ -55,6 +94,7 @@ function App() {
           />
         </label>
 
+        {/* Buttons */}
         <div className="flex gap-4">
           <button
             onClick={generateArray}
@@ -65,11 +105,11 @@ function App() {
           </button>
 
           <button
-            onClick={bubbleSort}
+            onClick={handleSort}
             disabled={isSorting}
             className="px-4 py-2 bg-green-600 rounded hover:bg-green-700 disabled:opacity-50"
           >
-            Bubble Sort
+            Sort
           </button>
         </div>
       </div>
@@ -80,7 +120,13 @@ function App() {
           <div
             key={idx}
             style={{ height: `${value}px` }}
-            className="bg-teal-400 flex-1 rounded-sm"
+            className={`flex-1 rounded-sm ${
+              sortedIndices.includes(idx)
+                ? "bg-green-500"
+                : activeIndices.includes(idx)
+                ? "bg-red-400"
+                : "bg-teal-400"
+            }`}
           />
         ))}
       </div>
