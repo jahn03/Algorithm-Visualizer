@@ -6,6 +6,8 @@ import { runAnimations } from "./utils/animationRunner";
 import { quickSortSteps } from "./algorithms/quickSort";
 import { insertionSortSteps } from "./algorithms/insertionSort";
 import { heapSortSteps } from "./algorithms/heapSort";
+import { algorithmInfo } from "./algorithms/algorithmInfo";
+
 
 
 function App() {
@@ -176,6 +178,29 @@ function App() {
           />
         ))}
       </div>
+
+      {/* Algorithm Info Panel */}
+      <div className="mt-8 max-w-3xl bg-gray-800 p-6 rounded-xl shadow-lg">
+        <h2 className="text-xl font-semibold mb-2">
+          {algorithmInfo[selectedAlgorithm].name}
+        </h2>
+
+        <p className="text-gray-300 mb-4">
+          {algorithmInfo[selectedAlgorithm].description}
+        </p>
+
+        <div className="flex gap-6 text-sm text-gray-400">
+          <span>
+            <strong>Time Complexity:</strong>{" "}
+            {algorithmInfo[selectedAlgorithm].time}
+          </span>
+          <span>
+            <strong>Space Complexity:</strong>{" "}
+            {algorithmInfo[selectedAlgorithm].space}
+          </span>
+        </div>
+      </div>
+
     </div>
   );
 }
