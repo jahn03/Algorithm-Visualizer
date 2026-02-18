@@ -1,7 +1,11 @@
-async function wait(speed, isPausedRef) {
+async function wait(speed, isPausedRef, isCancelledRef) {
   while (isPausedRef.current) {
+    if (isCancelledRef.current) return;
     await new Promise((r) => setTimeout(r, 50));
   }
+
+  if (isCancelledRef.current) return;
+
   await new Promise((r) => setTimeout(r, speed));
 }
 
@@ -11,9 +15,12 @@ export async function runAnimations(
   setActiveIndices,
   setSortedIndices,
   speed,
-  isPausedRef
+  isPausedRef,
+  isCancelledRef
 ) {
   for (let step of steps) {
+    if (isCancelledRef.current) break;
+
     if (step.type === "compare") {
       setActiveIndices(step.indices);
     }
@@ -42,6 +49,6 @@ export async function runAnimations(
       setActiveIndices([]);
     }
 
-    await wait(speed, isPausedRef);
+    await wait(speed, isPausedRef, isCancelledRef);
   }
 }

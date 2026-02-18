@@ -14,6 +14,8 @@ function App() {
 
   const speed = 50;
   const isPausedRef = useRef(false);
+  const isCancelledRef = useRef(false);
+
 
   useEffect(() => {
     generateArray();
@@ -44,6 +46,9 @@ function App() {
 
   const handleSort = async () => {
     setIsSorting(true);
+    isCancelledRef.current = false;
+    isPausedRef.current = false;
+
     setSortedIndices([]);
     const steps = getSteps();
 
@@ -53,12 +58,14 @@ function App() {
       setActiveIndices,
       setSortedIndices,
       speed,
-      isPausedRef
+      isPausedRef,
+      isCancelledRef
     );
 
     setIsSorting(false);
     setActiveIndices([]);
   };
+
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-6">
@@ -111,6 +118,27 @@ function App() {
           >
             Sort
           </button>
+
+          <button
+            onClick={() => (isPausedRef.current = !isPausedRef.current)}
+            disabled={!isSorting}
+            className="px-4 py-2 bg-yellow-600 rounded hover:bg-yellow-700 disabled:opacity-50"
+          >
+            {isPausedRef.current ? "Resume" : "Pause"}
+          </button>
+
+          <button
+            onClick={() => {
+              isCancelledRef.current = true;
+              setIsSorting(false);
+              setActiveIndices([]);
+            }}
+            disabled={!isSorting}
+            className="px-4 py-2 bg-red-600 rounded hover:bg-red-700 disabled:opacity-50"
+          >
+            Stop
+          </button>
+
         </div>
       </div>
 
