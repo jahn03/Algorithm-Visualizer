@@ -177,6 +177,25 @@ function App() {
         ))}
       </div>
 
+      {/* Legend */}
+      <div className="mt-6 flex gap-6 text-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-teal-400 rounded-sm"></div>
+          <span>Unsorted</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-red-400 rounded-sm"></div>
+          <span>Comparing / Active</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-green-500 rounded-sm"></div>
+          <span>Sorted</span>
+        </div>
+      </div>
+
+
       {/* Algorithm Info Panel */}
       <div className="mt-8 max-w-3xl bg-gray-800 p-6 rounded-xl shadow-lg">
         <h2 className="text-xl font-semibold mb-2">
