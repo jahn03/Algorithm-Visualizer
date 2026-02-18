@@ -8,8 +8,6 @@ import { insertionSortSteps } from "./algorithms/insertionSort";
 import { heapSortSteps } from "./algorithms/heapSort";
 import { algorithmInfo } from "./algorithms/algorithmInfo";
 
-
-
 function App() {
   const [array, setArray] = useState([]);
   const [arraySize, setArraySize] = useState(30);
@@ -17,11 +15,10 @@ function App() {
   const [activeIndices, setActiveIndices] = useState([]);
   const [sortedIndices, setSortedIndices] = useState([]);
   const [isSorting, setIsSorting] = useState(false);
+  const [speed, setSpeed] = useState(50); // ✅ now dynamic
 
-  const speed = 50;
   const isPausedRef = useRef(false);
   const isCancelledRef = useRef(false);
-
 
   useEffect(() => {
     generateArray();
@@ -38,26 +35,13 @@ function App() {
   };
 
   const getSteps = () => {
-    if (selectedAlgorithm === "bubble") {
-      return bubbleSortSteps(array);
-    }
-    if (selectedAlgorithm === "merge") {
-      return mergeSortSteps(array);
-    }
-    if (selectedAlgorithm === "selection") {
-      return selectionSortSteps(array);
-    }
-    if (selectedAlgorithm === "quick") {
-      return quickSortSteps(array);
-    }
-    if (selectedAlgorithm === "insertion") {
-      return insertionSortSteps(array);
-    }
-    if (selectedAlgorithm === "heap") {
-      return heapSortSteps(array);
-    }
+    if (selectedAlgorithm === "bubble") return bubbleSortSteps(array);
+    if (selectedAlgorithm === "merge") return mergeSortSteps(array);
+    if (selectedAlgorithm === "selection") return selectionSortSteps(array);
+    if (selectedAlgorithm === "quick") return quickSortSteps(array);
+    if (selectedAlgorithm === "insertion") return insertionSortSteps(array);
+    if (selectedAlgorithm === "heap") return heapSortSteps(array);
     return [];
-    
   };
 
   const handleSort = async () => {
@@ -82,7 +66,6 @@ function App() {
     setActiveIndices([]);
   };
 
-
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-6">
       <h1 className="text-3xl font-bold mb-6">Algorithm Visualizer</h1>
@@ -102,7 +85,6 @@ function App() {
           <option value="quick">Quick Sort</option>
           <option value="insertion">Insertion Sort</option>
           <option value="heap">Heap Sort</option>
-
         </select>
 
         {/* Array Size Slider */}
@@ -121,8 +103,25 @@ function App() {
           />
         </label>
 
+        {/* ✅ Speed Slider */}
+        <label className="w-full">
+          <span className="text-sm text-gray-300">
+            Speed: {speed} ms
+          </span>
+          <input
+            type="range"
+            min="10"
+            max="150"
+            step="5"
+            value={speed}
+            disabled={isSorting}
+            onChange={(e) => setSpeed(Number(e.target.value))}
+            className="w-full"
+          />
+        </label>
+
         {/* Buttons */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 flex-wrap justify-center">
           <button
             onClick={generateArray}
             disabled={isSorting}
@@ -158,7 +157,6 @@ function App() {
           >
             Stop
           </button>
-
         </div>
       </div>
 
@@ -200,7 +198,6 @@ function App() {
           </span>
         </div>
       </div>
-
     </div>
   );
 }
