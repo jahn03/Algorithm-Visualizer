@@ -3,6 +3,10 @@ import { bubbleSortSteps } from "./algorithms/bubbleSort";
 import { mergeSortSteps } from "./algorithms/mergeSort";
 import { selectionSortSteps } from "./algorithms/selectionSort";
 import { runAnimations } from "./utils/animationRunner";
+import { quickSortSteps } from "./algorithms/quickSort";
+import { insertionSortSteps } from "./algorithms/insertionSort";
+import { heapSortSteps } from "./algorithms/heapSort";
+
 
 function App() {
   const [array, setArray] = useState([]);
@@ -41,7 +45,17 @@ function App() {
     if (selectedAlgorithm === "selection") {
       return selectionSortSteps(array);
     }
+    if (selectedAlgorithm === "quick") {
+      return quickSortSteps(array);
+    }
+    if (selectedAlgorithm === "insertion") {
+      return insertionSortSteps(array);
+    }
+    if (selectedAlgorithm === "heap") {
+      return heapSortSteps(array);
+    }
     return [];
+    
   };
 
   const handleSort = async () => {
@@ -83,6 +97,10 @@ function App() {
           <option value="bubble">Bubble Sort</option>
           <option value="merge">Merge Sort</option>
           <option value="selection">Selection Sort</option>
+          <option value="quick">Quick Sort</option>
+          <option value="insertion">Insertion Sort</option>
+          <option value="heap">Heap Sort</option>
+
         </select>
 
         {/* Array Size Slider */}
