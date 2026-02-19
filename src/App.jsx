@@ -68,7 +68,16 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-6">
-      <h1 className="text-3xl font-bold mb-6">Algorithm Visualizer</h1>
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold mb-2">
+          Algorithm Visualizer
+        </h1>
+        <p className="text-gray-400 max-w-2xl mx-auto">
+          An interactive tool for visualizing and understanding sorting algorithms 
+          through real-time animations, controls, and performance insights.
+        </p>
+      </div>
+
 
       <div className="flex flex-col items-center gap-4 mb-6 w-full max-w-md">
 
