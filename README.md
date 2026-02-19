@@ -5,7 +5,7 @@ An interactive algorithm visualizer built with React and Tailwind CSS, featuring
 ## Features
 
 - Visualizes sorting algorithms step by step
-- Supports Bubble Sort and Merge Sort
+- Supports Bubble Sort, Merge Sort, Selection Sort, Quick Sort, Insertion Sort and Heap Sort
 - Pause and resume animations
 - Adjustable animation speed
 - Dynamic algorithm information panel
